@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:rep="internal" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Dialog"
+    activeTab="0"
+    xtype="tabpanel">
+    <items jcr:primaryType="cq:WidgetCollection">
+        <endpointListTab
+            jcr:primaryType="cq:Widget"
+            anchor="100%"
+            title="Endpoints"
+            xtype="panel">
+            <items jcr:primaryType="cq:WidgetCollection">
+                <catalogname
+                    jcr:primaryType="cq:Widget"
+                    fieldDescription="The catalog name is the group in which the components are placed"
+                    fieldLabel="LMZ Catalog Name"
+                    name="./name"
+                    xtype="textfield"
+                />
+
+                <endpointList
+                    jcr:primaryType="cq:Widget"
+                    fieldDescription="Press + to add another widget"
+                    fieldLabel="Widgets"
+                    name="./widgetEndpoints"
+                    xtype="multifield">
+                        <fieldConfig
+                            jcr:primaryType="cq:Widget"
+                            xtype="textfield"
+                        />
+                </endpointList>
+                <maintenanceMode
+                    jcr:primaryType="cq:Widget"
+                    fieldDescription="The widgets will output a maintenance message when checked (and replicated)"
+                    fieldLabel="Maintenance mode"
+                    name="./maintenanceMode"
+                    xtype="selection"
+                    type="checkbox"
+                />
+                <maintenanceMessage
+                    jcr:primaryType="cq:Widget"
+                    fieldLabel="Maintenance message"
+                    name="./maintenanceMessage"
+                    xtype="textfield"
+                />
+            </items>
+        </endpointListTab>
+    </items>
+
+    <rep:policy jcr:primaryType="rep:ACL">
+        <deny
+            jcr:primaryType="rep:DenyACE"
+            rep:principalName="contributor"
+            rep:privileges="{Name}[jcr:read]" />
+
+        <allow
+            jcr:primaryType="rep:GrantACE"
+            rep:principalName="administrators"
+            rep:privileges="{Name}[jcr:read]" />
+    </rep:policy>
+</jcr:root>

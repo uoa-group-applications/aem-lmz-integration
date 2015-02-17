@@ -1,0 +1,84 @@
+.lmzcatalogcomponent table {
+    border-collapse: collapse;
+
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+
+    width: 100%;
+}
+
+.lmzcatalogcomponent table th {
+    font-size: 14px;
+    font-weight: bold;
+    background-color: #71A2C0;
+    color: white;
+
+    padding: 10px;
+
+}
+
+.lmzcatalogcomponent .info-block {
+    border-radius: 5px;
+    color: #333;
+    background-color: #C8DBCD;
+    padding: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 4px;
+    margin-bottom: 10px
+}
+
+
+.lmzcatalogcomponent .warning-block {
+    border-radius: 5px;
+    color: #333;
+    background-color: #d9c4b4;
+    padding: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 4px;
+    margin-bottom: 10px
+}
+
+.lmzcatalogcomponent table tr.odd {
+    background-color: #eee;
+}
+
+.lmzcatalogcomponent table tr.replicate {
+    background-color: white;
+}
+
+.lmzcatalogcomponent table tr {
+    border-bottom: 1px solid #999;
+}
+
+.lmzcatalogcomponent table td {
+    padding: 10px;
+}
+
+.lmzcatalogcomponent table td.success {
+    color: #6FC071;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.lmzcatalogcomponent table td.fail {
+    color: #A2655B;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.lmzcatalogcomponent table td .config {
+    font-size: 12px;
+    font-weight: bold;
+    color: #aaa;
+    margin-top: 5px;
+    display: inline-block;
+}
+
+.lmzcatalogcomponent table td .config a {
+    color: #999;
+}
+
