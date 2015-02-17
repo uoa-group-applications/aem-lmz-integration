@@ -22,15 +22,6 @@
         <crx.password>admin</crx.password>
     </properties>
 
-    <distributionManagement>
-        <repository>
-            <id>uoa-releases</id>
-            <name>UOA Release Repository</name>
-            <url>https://waterfall.auckland.ac.nz/nexus/content/repositories/releases</url>
-        </repository>
-    </distributionManagement>
-
-
     <build>
         <pluginManagement>
             <plugins>                                                                                                                                                                                                                          
@@ -230,12 +221,11 @@
 
     </profiles>
 
-
-        <!-- default bundles to install -->
-        <modules>
-                <module>bundle</module>
-				<module>content</module>
-        </modules>
+    <!-- default bundles to install -->
+    <modules>
+            <module>bundle</module>
+            <module>content</module>
+    </modules>
 
 </project>
 
