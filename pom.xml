@@ -95,7 +95,6 @@
                     </configuration>
                 </plugin>
 
-                <!-- disable deploy to nexus -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
@@ -221,7 +220,6 @@
         <profile>
             <id>autoInstallPackage - Publish</id>
             <properties>
-                <!-- Localhost publication location -->
                 <crx.host>localhost</crx.host>
                 <crx.port>4503</crx.port>
                 <crx.username>admin</crx.username>
