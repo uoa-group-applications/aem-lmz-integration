@@ -14,6 +14,12 @@
     <name>AEM LMZ Integration Project - Reactor Project</name>
     <description>Maven Multimodule project for the AEM LMZ Integration Project.</description>
 
+    <scm>
+        <url>https://github.com/uoa-group-application/uoa-group-applications/aem-lmz-integration</url>
+        <connection>scm:git:https://github.com/uoa-group-applications/aem-lmz-integration.git</connection>
+        <developerConnection>scm:git:git@github.com:/uoa-group-applications/aem-lmz-integration.git</developerConnection>
+    </scm>
+
     <properties>
         <!-- Localhost -->
         <crx.host>localhost</crx.host>
