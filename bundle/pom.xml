@@ -153,8 +153,8 @@
             <artifactId>cq-wcm-foundation</artifactId>
 			<exclusions>
 				<exclusion>
-					<groupId>common-logging</groupId>
-					<artifactId>common-logging</artifactId>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
 				</exclusion>
 			</exclusions>
         </dependency>
