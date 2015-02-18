@@ -17,7 +17,7 @@
     <scm>
         <url>https://github.com/uoa-group-application/uoa-group-applications/aem-lmz-integration</url>
         <connection>scm:git:https://github.com/uoa-group-applications/aem-lmz-integration.git</connection>
-        <developerConnection>scm:git:git@github.com:/uoa-group-applications/aem-lmz-integration.git</developerConnection>
+        <developerConnection>scm:git:git@github.com:uoa-group-applications/aem-lmz-integration.git</developerConnection>
     </scm>
 
     <properties>
