@@ -104,6 +104,11 @@ public class CatalogServiceImpl implements CatalogService {
     protected List<Node> getRecursiveChildren(Node node) {
         List<Node> list = new ArrayList<Node>();
 
+        // don't replicate policy nodes, they'll kill the replication agent.
+        if (isPolicyNode(node)) {
+            return list;
+        }
+
         list.add(node);
 
         try {
@@ -123,6 +128,18 @@ public class CatalogServiceImpl implements CatalogService {
         }
 
         return list;
+    }
+
+    /**
+     * @return true if this is a policy node
+     */
+    protected boolean isPolicyNode(Node node) {
+        try {
+            return "rep:policy".equals(node.getName());
+        } catch (RepositoryException repEx) {
+            LOG.error("Couldn't check node name", repEx);
+        }
+        return false;
     }
 
     /**
