@@ -163,6 +163,13 @@ public class LMZConfigDialogFactory {
         retVal.addProperty("fieldLabel", "String", item.getLabel());
         retVal.addProperty("allowBlank", "Boolean", item.isRequired() ? "false" : "true");
         retVal.addProperty("name", "String", "./" + name);
+
+        // if this is a numberfield, let's put 32-bit restrictions on there
+        if ("number".equals(item.getType())) {
+            retVal.addProperty("minValue", "String", "-2147483648");
+            retVal.addProperty("maxValue", "String", "2147483648");
+        }
+
         if (item.getPattern() != null) {
             retVal.addProperty("regex", "String", item.PATTERNS.get(item.getPattern()));
             retVal.addProperty("regexText", "String", "Please enter a valid " + item.getPattern() + " address.");
