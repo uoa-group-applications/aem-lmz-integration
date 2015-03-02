@@ -74,12 +74,15 @@ public class LMZWidgetComponentCreator {
             return toWidgetConfiguration(responseBody);
         } catch (IOException ioEx) {
             logger.error("Could not finish the configuration request", ioEx);
-            return null;
-        } finally {
+        } catch (IllegalStateException isEx) {
+            logger.error("This URL specified is incorrect, aborting.", isEx);
+        }
+        finally {
             if (method != null) {
                 method.releaseConnection();
             }
         }
+        return null;
     }
 
 
