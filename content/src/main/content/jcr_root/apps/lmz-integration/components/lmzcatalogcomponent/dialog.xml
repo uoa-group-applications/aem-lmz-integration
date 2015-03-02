@@ -15,6 +15,8 @@
                     fieldDescription="The catalog name is the group in which the components are placed"
                     fieldLabel="LMZ Catalog Name"
                     name="./name"
+                    regex="/^[A-Za-z0-9 ]+$/"
+                    regexText="Please enter a valid catalog name (A-Z, a-z, digits)"
                     xtype="textfield"
                 />
 
