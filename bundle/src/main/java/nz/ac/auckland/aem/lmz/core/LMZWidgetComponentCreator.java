@@ -91,7 +91,7 @@ public class LMZWidgetComponentCreator {
      */
     public void persistWidgetConfig(String endpointUrl, WidgetConfiguration widgetConfig) {
 
-        String catalogName = getSanitizedCatalogName();
+        String catalogName = getUniqueCatalogIdentifier();
 
         LMZConfigDialogFactory dialogFactory = getDialogFactoryInstance();
         dialogFactory.setWidgetConfiguration(widgetConfig);
@@ -112,7 +112,7 @@ public class LMZWidgetComponentCreator {
 
             Node componentNode = root.addNode(componentName, "cq:Component");
             componentNode.setProperty("allowedParents", "*/parsys");
-            componentNode.setProperty("componentGroup", getRawCatalogName());
+            componentNode.setProperty("componentGroup", getCatalogName());
             componentNode.setProperty("jcr:title", widgetConfig.getWidget().getDescription());
             componentNode.setProperty("requestUrl", sanitizeRequestUrl(endpointUrl));
             componentNode.setProperty("maintenanceMode", isInMaintenanceMode());
@@ -174,14 +174,11 @@ public class LMZWidgetComponentCreator {
         return root;
     }
 
-    public String getSanitizedCatalogName() {
-        return LMZConfigDialogFactory.camelCaseString(getRawCatalogName());
+    public String getUniqueCatalogIdentifier() {
+        return this.context.getProperties().get("catalog-uuid", (String) null);
     }
 
-    /**
-     * @return the raw catalog name stored in the JCR
-     */
-    public String getRawCatalogName() {
+    public String getCatalogName() {
         return this.context.getProperties().get("name", "catalogName");
     }
 

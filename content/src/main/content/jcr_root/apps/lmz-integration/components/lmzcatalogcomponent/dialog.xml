@@ -11,6 +11,13 @@
                         if (src[0] != $CQ('.lmzcatalogcomponent')[0]) {
                             $CQ(dialog.getContentTarget().dom).html('Access denied, there is more than one catalog component on this page.');
                         }
+
+                        var uuid = dialog.getField('./catalog-uuid');
+                        var val = uuid.getValue();
+                        if (val === '') {
+                            uuid.setValue(val = md5(dialog.path + '_' + Math.floor(Math.random() * 1000000)));
+                        }
+                        dialog.getField('./display-uuid').setValue(val);
                     }
                "
     />
@@ -24,6 +31,15 @@
                         title="Endpoints"
                         xtype="panel">
                     <items jcr:primaryType="cq:WidgetCollection">
+
+                        <catalogunique
+                                jcr:primaryType="cq:Widget"
+                                fieldDescription="Unique identifier for this catalog"
+                                fieldLabel="UUID"
+                                name="./catalog-uuid"
+                                xtype="hidden"
+                            />
+
                         <catalogname
                                 jcr:primaryType="cq:Widget"
                                 fieldDescription="The catalog name is the group in which the components are placed"
@@ -32,7 +48,7 @@
                                 regex="/^[A-Za-z0-9 ]+$/"
                                 regexText="Please enter a valid catalog name (A-Z, a-z, digits)"
                                 xtype="textfield"
-                                />
+                            />
 
                         <endpointList
                                 jcr:primaryType="cq:Widget"
@@ -43,8 +59,9 @@
                             <fieldConfig
                                     jcr:primaryType="cq:Widget"
                                     xtype="textfield"
-                                    />
+                                />
                         </endpointList>
+
                         <maintenanceMode
                                 jcr:primaryType="cq:Widget"
                                 fieldDescription="The widgets will output a maintenance message when checked (and replicated)"
@@ -52,13 +69,25 @@
                                 name="./maintenanceMode"
                                 xtype="selection"
                                 type="checkbox"
-                                />
+                            />
                         <maintenanceMessage
                                 jcr:primaryType="cq:Widget"
                                 fieldLabel="Maintenance message"
+                                fieldDescription="The text displayed in place of the widget when maintenance mode is enabled"
                                 name="./maintenanceMessage"
                                 xtype="textfield"
-                                />
+                            />
+
+
+                        <uuidDisplay
+                                jcr:primaryType="cq:Widget"
+                                fieldDescription="Unique identifier for this catalog"
+                                fieldLabel="UUID"
+                                disabled="{Boolean}true"
+                                name="./display-uuid"
+                                xtype="textfield"
+                            />
+
                     </items>
                 </endpointListTab>
             </items>
