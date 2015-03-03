@@ -11,10 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Node;
-import javax.jcr.Property;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
+import javax.jcr.*;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,6 +24,7 @@ import java.util.Map;
  */
 public class LMZWidgetComponentCreator {
 
+    public static final String PARAM_RESOURCETYPE = "sling:resourceType";
     private static Logger logger = LoggerFactory.getLogger(LMZWidgetComponentCreator.class);
 
     /**
@@ -287,5 +285,69 @@ public class LMZWidgetComponentCreator {
 
     public boolean shouldSynchronize() {
         return this.context.isAuthor();
+    }
+
+    /**
+     * This method determines whether this is the first catalog component on the page.
+     * If it is not, true is returned.
+     *
+     * @return true if it is not the first component.
+     */
+    public boolean isFirstCatalogComponent() throws RepositoryException {
+        // get the jcr:content node
+        Node parsys = getParsysNode();
+
+        try {
+            NodeIterator nIterator = parsys.getNodes();
+
+            // iterate over all the nodes in the jcr:content node
+            while (nIterator.hasNext()) {
+                Node childNode = nIterator.nextNode();
+
+                // make sure it is a valid node
+                if (childNode == null) {
+                    continue;
+                }
+
+                // is a catalog component and the same as the current node, return true.
+                if (isCatalogComponent(childNode)) {
+                    return childNode.isSame(this.context.getCurrentNode());
+                }
+            }
+        }
+        catch (RepositoryException rEx) {
+            logger.error("An error occured retrieving child nodes", rEx);
+        }
+
+        return false;
+    }
+
+    protected Node getParsysNode() throws RepositoryException {
+        return this.context.getCurrentPage().getContentResource().adaptTo(Node.class).getNode("par");
+    }
+
+    /**
+     * @return true if this is a catalog component
+     */
+    protected boolean isCatalogComponent(Node childNode) throws RepositoryException {
+        return childNode.hasProperty(PARAM_RESOURCETYPE) && sameResourceType(childNode);
+    }
+
+    /**
+     * @return true if <code>childNode</code> has the same resource type as the catalog node
+     */
+    protected boolean sameResourceType(Node childNode) throws RepositoryException {
+        return childNode.getProperty(PARAM_RESOURCETYPE).getString().equals(getCatalogResourceType());
+    }
+
+    /**
+     * @return the catalog resource type
+     */
+    protected String getCatalogResourceType() throws RepositoryException {
+        Node current = this.context.getCurrentNode();
+
+        return current.hasProperty(PARAM_RESOURCETYPE)
+                    ? current.getProperty(PARAM_RESOURCETYPE).getString()
+                    : null;
     }
 }

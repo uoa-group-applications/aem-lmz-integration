@@ -2,51 +2,67 @@
 <jcr:root xmlns:rep="internal" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
     jcr:primaryType="cq:Dialog"
     activeTab="0"
-    xtype="tabpanel">
-    <items jcr:primaryType="cq:WidgetCollection">
-        <endpointListTab
-            jcr:primaryType="cq:Widget"
-            anchor="100%"
-            title="Endpoints"
-            xtype="panel">
-            <items jcr:primaryType="cq:WidgetCollection">
-                <catalogname
-                    jcr:primaryType="cq:Widget"
-                    fieldDescription="The catalog name is the group in which the components are placed"
-                    fieldLabel="LMZ Catalog Name"
-                    name="./name"
-                    regex="/^[A-Za-z0-9 ]+$/"
-                    regexText="Please enter a valid catalog name (A-Z, a-z, digits)"
-                    xtype="textfield"
-                />
+    xtype="dialog">
+    <listeners jcr:primaryType="nt:unstructured"
+               loadcontent="function(dialog) {
+                        var origin = dialog.path.substring(dialog.path.lastIndexOf('/')+1);
+                        var src = $CQ('#' + origin).closest('.lmzcatalogcomponent');
 
-                <endpointList
-                    jcr:primaryType="cq:Widget"
-                    fieldDescription="Press + to add another widget"
-                    fieldLabel="Widgets"
-                    name="./widgetEndpoints"
-                    xtype="multifield">
-                        <fieldConfig
-                            jcr:primaryType="cq:Widget"
-                            xtype="textfield"
-                        />
-                </endpointList>
-                <maintenanceMode
-                    jcr:primaryType="cq:Widget"
-                    fieldDescription="The widgets will output a maintenance message when checked (and replicated)"
-                    fieldLabel="Maintenance mode"
-                    name="./maintenanceMode"
-                    xtype="selection"
-                    type="checkbox"
-                />
-                <maintenanceMessage
-                    jcr:primaryType="cq:Widget"
-                    fieldLabel="Maintenance message"
-                    name="./maintenanceMessage"
-                    xtype="textfield"
-                />
+                        if (src[0] != $CQ('.lmzcatalogcomponent')[0]) {
+                            $CQ(dialog.getContentTarget().dom).html('Access denied, there is more than one catalog component on this page.');
+                        }
+                    }
+               "
+    />
+
+    <items jcr:primaryType="cq:WidgetCollection">
+        <tabs jcr:primaryType="cq:TabPanel">
+            <items jcr:primaryType="cq:WidgetCollection">
+                <endpointListTab
+                        jcr:primaryType="cq:Widget"
+                        anchor="100%"
+                        title="Endpoints"
+                        xtype="panel">
+                    <items jcr:primaryType="cq:WidgetCollection">
+                        <catalogname
+                                jcr:primaryType="cq:Widget"
+                                fieldDescription="The catalog name is the group in which the components are placed"
+                                fieldLabel="LMZ Catalog Name"
+                                name="./name"
+                                regex="/^[A-Za-z0-9 ]+$/"
+                                regexText="Please enter a valid catalog name (A-Z, a-z, digits)"
+                                xtype="textfield"
+                                />
+
+                        <endpointList
+                                jcr:primaryType="cq:Widget"
+                                fieldDescription="Press + to add another widget"
+                                fieldLabel="Widgets"
+                                name="./widgetEndpoints"
+                                xtype="multifield">
+                            <fieldConfig
+                                    jcr:primaryType="cq:Widget"
+                                    xtype="textfield"
+                                    />
+                        </endpointList>
+                        <maintenanceMode
+                                jcr:primaryType="cq:Widget"
+                                fieldDescription="The widgets will output a maintenance message when checked (and replicated)"
+                                fieldLabel="Maintenance mode"
+                                name="./maintenanceMode"
+                                xtype="selection"
+                                type="checkbox"
+                                />
+                        <maintenanceMessage
+                                jcr:primaryType="cq:Widget"
+                                fieldLabel="Maintenance message"
+                                name="./maintenanceMessage"
+                                xtype="textfield"
+                                />
+                    </items>
+                </endpointListTab>
             </items>
-        </endpointListTab>
+        </tabs>
     </items>
 
     <rep:policy jcr:primaryType="rep:ACL">
