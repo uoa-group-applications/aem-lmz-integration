@@ -137,6 +137,15 @@ public class LMZWidgetComponentCreator {
             Node ed = session.getNode("/apps/lmz-integration/components/lmzwidget-base/cq:editConfig");
             session.getWorkspace().copy(ed.getPath(), componentNode.getPath() + "/cq:editConfig");
 
+            // make text specific to component
+            Node newEditConfig = session.getNode(componentNode.getPath() + "/cq:editConfig");
+            newEditConfig.setProperty("cq:actions", new String[] {
+                    "text:" + widgetConfig.getWidget().getDescription(),
+                    "-", "edit", "-", "delete"
+            });
+
+            session.save();
+
         } catch (RepositoryException rEx) {
             logger.error("A repository exception occured", rEx);
         }
