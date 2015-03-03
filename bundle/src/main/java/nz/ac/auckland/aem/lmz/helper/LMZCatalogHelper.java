@@ -1,9 +1,8 @@
-package nz.ac.auckland.aem.lmz.core;
+package nz.ac.auckland.aem.lmz.helper;
 
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.Property;
-import javax.jcr.RepositoryException;
+import nz.ac.auckland.aem.lmz.core.ComponentBeanContext;
+
+import javax.jcr.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +73,7 @@ public class LMZCatalogHelper {
         }
         return resourceTypes;
     }
+
 
     /**
      * @return the path at which this catalog can be found

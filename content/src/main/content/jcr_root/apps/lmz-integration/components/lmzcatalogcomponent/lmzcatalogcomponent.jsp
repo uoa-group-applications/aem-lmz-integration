@@ -11,13 +11,13 @@
 <%@ page import="org.apache.commons.lang3.ArrayUtils" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="nz.ac.auckland.aem.lmz.core.LMZCatalogUsage" %>
-<%@ page import="nz.ac.auckland.aem.lmz.core.LMZCatalogHelper" %>
+<%@ page import="nz.ac.auckland.aem.lmz.helper.LMZCatalogHelper" %>
 
 <c:set var="usage" value="<%= new LMZCatalogUsage(_beanContext) %>" />
 <%
 
     LMZWidgetComponentCreator creator = new LMZWidgetComponentCreator(_beanContext);
-    LMZCatalogHelper categoryHelper = new LMZCatalogHelper(_beanContext);
+    nz.ac.auckland.aem.lmz.helper.LMZCatalogHelper categoryHelper = new nz.ac.auckland.aem.lmz.helper.LMZCatalogHelper(_beanContext);
 
     boolean firstComponent = creator.isFirstCatalogComponent();
 
@@ -100,7 +100,7 @@
                 </c:forEach>
                 <tr class="replicate">
                     <td colspan="2" align="right">
-                        <form action="/bin/replicateWidgetCatalog.do" method="get">
+                        <form action="/bin/replicateWidgetCatalog.do" method="post">
                             <input type="hidden" name="catalog" value="${uniqueCatalogId}" />
                             <input type="hidden" name="redirectTo" value="<%= mappedUrl(_currentPage.getPath() + ".html?done=true") %>" />
                             <button type="submit">Replicate Catalog</button>

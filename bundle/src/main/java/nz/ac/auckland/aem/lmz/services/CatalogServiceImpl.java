@@ -3,6 +3,7 @@ package nz.ac.auckland.aem.lmz.services;
 import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationException;
 import com.day.cq.replication.Replicator;
+import nz.ac.auckland.aem.lmz.helper.LMZCatalogHelper;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
@@ -15,6 +16,10 @@ import org.slf4j.LoggerFactory;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,8 +78,7 @@ public class CatalogServiceImpl implements CatalogService {
         List<Node> allNodes = this.getRecursiveChildren(catalog.adaptTo(Node.class));
 
         try {
-            // first we remove the existing components
-            replicator.replicate(catalog.adaptTo(Node.class).getSession(), ReplicationActionType.DELETE, catalog.getPath());
+            replicateRemove(catalogName);
 
             // then we reactivate them
             for (Node node : allNodes) {
@@ -93,6 +97,70 @@ public class CatalogServiceImpl implements CatalogService {
         catch (RepositoryException repEx) {
             LOG.error("An exception during repository access happened", repEx);
         }
+    }
+
+    /**
+     * Remove the catalog on the publication environment through replicate remove call
+     *
+     * @param catalogName is the catalog to remove
+     * @throws ReplicationException
+     * @throws RepositoryException
+     */
+    public void replicateRemove(String catalogName) throws ReplicationException, RepositoryException {
+        Resource catalog = getCatalogResource(catalogName);
+        if (catalog == null) {
+            LOG.warn("Cannot replicate a catalog that does not exist, aborting.");
+            return;
+        }
+
+        replicateRemovePath(catalog.adaptTo(Node.class).getSession(), catalog.getPath());
+    }
+
+    /**
+     * Remove replicate the path from the publication servers
+     *
+     * @param session the JCR session to operate on
+     * @param path is the path to remove
+     * @throws ReplicationException
+     * @throws RepositoryException
+     */
+    @Override
+    public void replicateRemovePath(Session session, String path) throws ReplicationException, RepositoryException {
+        replicator.replicate(session, ReplicationActionType.DELETE, path);
+    }
+
+    /**
+     * Get the catalog component node for the catalog with the identifier <code>uuid</code>
+     *
+     * @param session is the session
+     * @param uuid is the uuid to go looking for
+     * @return the node, or null when not found,
+     * @throws RepositoryException
+     */
+    @Override
+    public Node findCatalogComponentWithUuid(Session session, String uuid) throws RepositoryException {
+        QueryManager qMgr = session.getWorkspace().getQueryManager();
+        Query query = qMgr.createQuery(
+                "SELECT child.* FROM [nt:unstructured] as child WHERE child.[catalog-uuid] = '" + uuid + "'",
+                Query.JCR_SQL2
+        );
+
+        QueryResult qResult = query.execute();
+        NodeIterator nodeIterator = qResult.getNodes();
+
+        // no results?
+        if (nodeIterator.getSize() == 0L) {
+            LOG.error("There is no node with this uuid, aborting");
+            return null;
+        }
+
+        // more than one result?
+        if (nodeIterator.getSize() > 1L) {
+            LOG.error("There were multiple catalogs with the same UUID `{}` (shouldn't happen), aborting", uuid);
+            return null;
+        }
+
+        return nodeIterator.nextNode();
     }
 
     /**
@@ -148,7 +216,6 @@ public class CatalogServiceImpl implements CatalogService {
     protected Resource getCatalogResource(String catalogName) {
         return getResourceResolver().getResource("/apps/lmzconfig/components/" + catalogName);
     }
-
 
     /**
      * @return the resource resolver instance

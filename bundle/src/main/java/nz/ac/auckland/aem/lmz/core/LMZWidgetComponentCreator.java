@@ -1,5 +1,6 @@
 package nz.ac.auckland.aem.lmz.core;
 
+import nz.ac.auckland.aem.lmz.helper.LMZCatalogHelper;
 import nz.ac.auckland.aem.lmz.lmzconfigdialog.LMZConfigDialogFactory;
 import nz.ac.auckland.lmzwidget.configuration.model.WidgetConfiguration;
 import nz.ac.auckland.lmzwidget.configuration.parser.WidgetConfigurationParser;
@@ -40,7 +41,7 @@ public class LMZWidgetComponentCreator {
     /**
      * Catalog helper
      */
-    private  LMZCatalogHelper catHelper;
+    private LMZCatalogHelper catHelper;
 
     /**
      * Initialize data-members

@@ -2,6 +2,7 @@ package nz.ac.auckland.aem.lmz.core;
 
 import com.day.cq.wcm.api.Page;
 import nz.ac.auckland.aem.lmz.dto.UsageLocation;
+import nz.ac.auckland.aem.lmz.helper.LMZCatalogHelper;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,6 +131,9 @@ public class LMZCatalogUsage {
         return usages;
     }
 
+    /**
+     * @return the page title for the instance of <code>Page</code>
+     */
     protected String getPageTitle(Page page) {
         if (StringUtils.isNotBlank(page.getNavigationTitle())) {
             return page.getNavigationTitle();

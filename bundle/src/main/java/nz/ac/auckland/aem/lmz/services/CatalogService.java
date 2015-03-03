@@ -1,5 +1,11 @@
 package nz.ac.auckland.aem.lmz.services;
 
+import com.day.cq.replication.ReplicationException;
+
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
 /**
  * @author Marnix Cook
  *
@@ -23,5 +29,28 @@ public interface CatalogService {
      */
     void replicate(String catalogName);
 
+    /**
+     * Remove the catalog on the publication environment through replicate remove call
+     *
+     * @param catalogName is the catalog to remove
+     * @throws ReplicationException
+     * @throws RepositoryException
+     */
+    void replicateRemove(String catalogName) throws ReplicationException, RepositoryException;
 
+    /**
+     * Replicate remove node on this path
+     *
+     * @param path is the path to remove
+     * @param session the JCR session to operate on
+     */
+    void replicateRemovePath(Session session, String path) throws ReplicationException, RepositoryException;
+
+    /**
+     * Returns the JCR node that belongs to the category component with uuid <code>uuid</code>
+     *
+     * @param uuid is the uuid to go looking for
+     * @return the node that belongs to it.
+     */
+    Node findCatalogComponentWithUuid(Session session, String uuid) throws RepositoryException;
 }
