@@ -10,9 +10,14 @@
 <%@ page import="nz.ac.auckland.lmzwidget.configuration.model.WidgetConfiguration" %>
 <%@ page import="org.apache.commons.lang3.ArrayUtils" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="nz.ac.auckland.aem.lmz.core.LMZCatalogUsage" %>
+<%@ page import="nz.ac.auckland.aem.lmz.core.LMZCatalogHelper" %>
+
+<c:set var="usage" value="<%= new LMZCatalogUsage(_beanContext) %>" />
 <%
 
     LMZWidgetComponentCreator creator = new LMZWidgetComponentCreator(_beanContext);
+    LMZCatalogHelper categoryHelper = new LMZCatalogHelper(_beanContext);
 
     boolean firstComponent = creator.isFirstCatalogComponent();
 
@@ -26,8 +31,8 @@
 
     request.setAttribute("maintenanceMode", creator.isInMaintenanceMode());
     request.setAttribute("replicated", "true".equals(request.getParameter("done")));
-    request.setAttribute("catalogName", creator.getRawCatalogName());
-    request.setAttribute("sanitizedCatalogName", creator.getSanitizedCatalogName());
+    request.setAttribute("catalogName", creator.getCatalogName());
+    request.setAttribute("uniqueCatalogId", categoryHelper.getUniqueCatalogIdentifier());
     request.setAttribute("notFirstComponent", !firstComponent);
 %>
 <div id="<%= _currentNode.getName() %>">
@@ -96,7 +101,7 @@
                 <tr class="replicate">
                     <td colspan="2" align="right">
                         <form action="/bin/replicateWidgetCatalog.do" method="get">
-                            <input type="hidden" name="catalog" value="${sanitizedCatalogName}" />
+                            <input type="hidden" name="catalog" value="${uniqueCatalogId}" />
                             <input type="hidden" name="redirectTo" value="<%= mappedUrl(_currentPage.getPath() + ".html?done=true") %>" />
                             <button type="submit">Replicate Catalog</button>
                         </form>
@@ -104,9 +109,45 @@
                 </tr>
             </table>
 
+            <h2>Catalog component usage</h2>
+            <c:choose>
+
+                <c:when test="${usage.inUse}">
+                    <table>
+                        <tr>
+                            <th>Component</th>
+                            <th>Location</th>
+                        </tr>
+                        <c:forEach items="${usage.locations}" var="location">
+                            <tr>
+                                <td>${location.component}</td>
+                                <td><a href="${location.url}">${location.pageTitle}</a></td>
+                            </tr>
+                        </c:forEach>
+                    </table>
+                    <div class="info-block">
+                        Because the catalog is actively being used, you are not allowed to delete it.
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <div class="info-block">
+                        <p>
+                            None of the widgets defined in this catalog are currently in use, it is therefore
+                            safe to delete the catalog. To do so, use the button below.
+                            <br/><br/>
+                        </p>
+                        <form id="deleteCatalog" action="/bin/deleteWidgetCatalog.do" method="post">
+                            <input type="hidden" name="catalog" value="${uniqueCatalogId}" />
+                            <input type="hidden" name="redirectTo" value="<%= mappedUrl(_currentPage.getParent().getPath() + ".html")%>" />
+                            <button type="submit">Delete Catalog</button>
+                        </form>
+                    </div>
+                    
+                </c:otherwise>
+            </c:choose>
 
             <c:if test="${replicated}">
-                <p class="info-block">
+                <p class="info-block flash">
                     The catalog has been replicated to the publication servers.
                 </p>
                 <script type="text/javascript">
@@ -114,11 +155,21 @@
                         $(document).ready(function() {
                             setTimeout(
                                 function() {
-                                    $(".info-block").fadeOut(1000);
+                                    $(".info-block.flash").fadeOut(1000);
                                 },
                                 3000
                             );
+
+                            // add a confirmation dialog to the submit button
+                            $("#deleteCatalog").submit(function() {
+                                if (confirm("Are you sure you want to delete the catalog?")) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            })
                         });
+
                     })(UOA.jQuery);
                 </script>
             </c:if>

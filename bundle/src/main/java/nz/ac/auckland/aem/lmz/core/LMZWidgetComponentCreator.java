@@ -38,10 +38,20 @@ public class LMZWidgetComponentCreator {
     private ComponentBeanContext context;
 
     /**
+     * Catalog helper
+     */
+    private  LMZCatalogHelper catHelper;
+
+    /**
      * Initialize data-members
      */
     public LMZWidgetComponentCreator(ComponentBeanContext context) {
         this.context = context;
+        this.catHelper = getHelperInstance(context);
+    }
+
+    protected LMZCatalogHelper getHelperInstance(ComponentBeanContext context) {
+        return new LMZCatalogHelper(context);
     }
 
 
@@ -91,7 +101,7 @@ public class LMZWidgetComponentCreator {
      */
     public void persistWidgetConfig(String endpointUrl, WidgetConfiguration widgetConfig) {
 
-        String catalogName = getUniqueCatalogIdentifier();
+        String catalogName = this.catHelper.getUniqueCatalogIdentifier();
 
         LMZConfigDialogFactory dialogFactory = getDialogFactoryInstance();
         dialogFactory.setWidgetConfiguration(widgetConfig);
@@ -124,7 +134,7 @@ public class LMZWidgetComponentCreator {
             session.save();
 
             // copy the cq edit configuration node
-            Node ed = session.getNode("/apps/lmz-integration/components/lmzcatalogcomponent/cq:editConfig");
+            Node ed = session.getNode("/apps/lmz-integration/components/lmzwidget-base/cq:editConfig");
             session.getWorkspace().copy(ed.getPath(), componentNode.getPath() + "/cq:editConfig");
 
         } catch (RepositoryException rEx) {
@@ -174,9 +184,7 @@ public class LMZWidgetComponentCreator {
         return root;
     }
 
-    public String getUniqueCatalogIdentifier() {
-        return this.context.getProperties().get("catalog-uuid", (String) null);
-    }
+
 
     public String getCatalogName() {
         return this.context.getProperties().get("name", "catalogName");
@@ -214,29 +222,10 @@ public class LMZWidgetComponentCreator {
 
 
     /**
-     * @return the widget list
-     */
-    public String[] getWidgetList() throws RepositoryException {
-        Node current = this.context.getCurrentNode();
-        if (current == null || !current.hasProperty("widgetEndpoints")) {
-            return null;
-        }
-
-        Property prop = current.getProperty("widgetEndpoints");
-        if (prop.isMultiple()) {
-            return this.context.getProperties().get("widgetEndpoints", (String[]) null);
-        } else {
-            return new String[] {
-                    this.context.getProperties().get("widgetEndpoints", (String) null)
-            };
-        }
-    }
-
-    /**
      * Update all the widgets and return some information around it success
      */
     public Map<String, WidgetConfiguration> updateAllWidgets() throws RepositoryException {
-        String[] widgetEndpoints = getWidgetList();
+        String[] widgetEndpoints = this.catHelper.getWidgetList();
 
         // has elements?
         if (ArrayUtils.isEmpty(widgetEndpoints)) {
