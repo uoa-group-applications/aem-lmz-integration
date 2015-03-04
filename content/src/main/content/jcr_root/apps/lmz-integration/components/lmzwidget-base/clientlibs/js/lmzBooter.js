@@ -20,7 +20,7 @@
 
             var
                 thiz = this,
-                allWidgets = $(".lmzwidget-base"),
+                allWidgets = $(".lmzwidget-base > .widget-wrapper[data-base-url!='']"),
                 allCss =
                     this.merge(
                         this.concat(allWidgets, function(el) { return el.getStyleUrls(); })
@@ -54,7 +54,9 @@
 
             // initialize the widgets
             $(".lmzwidget-base").each(function() {
-                $(this).data("lmzWidget").initialize();
+                if ($(this).data("lmzWidget")) {
+                    $(this).data("lmzWidget").initialize();
+                }
             });
 
         },
@@ -120,7 +122,7 @@
             $.each(all, function(key, widgetEl) {
                 result = result.concat(
                     callback(
-                        $(widgetEl).data("lmzWidget")
+                        $(widgetEl).closest(".lmzwidget-base").data("lmzWidget")
                     )
                 );
             });

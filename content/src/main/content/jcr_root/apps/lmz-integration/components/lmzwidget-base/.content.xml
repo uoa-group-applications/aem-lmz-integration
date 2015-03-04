@@ -3,5 +3,5 @@
     jcr:primaryType="cq:Component"
     jcr:title="LMZWidgetBase"
     allowedParents="[*/parsys]"
-    componentGroup="UoA LMZ"
+    componentGroup=".hidden"
 />
