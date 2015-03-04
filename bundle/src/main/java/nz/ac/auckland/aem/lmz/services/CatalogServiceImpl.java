@@ -3,7 +3,6 @@ package nz.ac.auckland.aem.lmz.services;
 import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationException;
 import com.day.cq.replication.Replicator;
-import nz.ac.auckland.aem.lmz.helper.LMZCatalogHelper;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
@@ -39,6 +38,11 @@ public class CatalogServiceImpl implements CatalogService {
     private static final Logger LOG = LoggerFactory.getLogger(CatalogServiceImpl.class);
 
     /**
+     * Catalog resource type
+     */
+    public static final String CATALOG_RESOURCETYPE = "lmz-integration/components/lmzcatalogcomponent";
+
+    /**
      * Resolver factory can be queried for resources
      */
     @Reference private ResourceResolverFactory resourceResolverFactory;
@@ -58,7 +62,20 @@ public class CatalogServiceImpl implements CatalogService {
      */
     @Override
     public boolean exists(String catalogName) {
-        return getCatalogResource(catalogName) != null;
+
+        // starts with /, so we're checking for a node
+        if (catalogName.startsWith("/")) {
+
+            Resource catalogResource = getResourceResolver().getResource(catalogName);
+            if (catalogResource == null || !CATALOG_RESOURCETYPE.equals(catalogResource.getResourceType())) {
+                LOG.error("Node at path `{}` does not exist, or is not of type {}", catalogName, CATALOG_RESOURCETYPE);
+                return false;
+            }
+            return true;
+
+        } else {
+            return getCatalogResourceByUuid(catalogName) != null;
+        }
     }
 
     /**
@@ -68,7 +85,7 @@ public class CatalogServiceImpl implements CatalogService {
      */
     @Override
     public void replicate(String catalogName) {
-        Resource catalog = getCatalogResource(catalogName);
+        Resource catalog = getCatalogResourceByUuid(catalogName);
         if (catalog == null) {
             LOG.warn("Cannot replicate a catalog that does not exist, aborting.");
             return;
@@ -107,7 +124,7 @@ public class CatalogServiceImpl implements CatalogService {
      * @throws RepositoryException
      */
     public void replicateRemove(String catalogName) throws ReplicationException, RepositoryException {
-        Resource catalog = getCatalogResource(catalogName);
+        Resource catalog = getCatalogResourceByUuid(catalogName);
         if (catalog == null) {
             LOG.warn("Cannot replicate a catalog that does not exist, aborting.");
             return;
@@ -213,7 +230,7 @@ public class CatalogServiceImpl implements CatalogService {
     /**
      * @return the resource for a specific catalog name
      */
-    protected Resource getCatalogResource(String catalogName) {
+    protected Resource getCatalogResourceByUuid(String catalogName) {
         return getResourceResolver().getResource("/apps/lmzconfig/components/" + catalogName);
     }
 

@@ -1,5 +1,6 @@
 package nz.ac.auckland.aem.lmz.replication;
 
+import nz.ac.auckland.aem.lmz.helper.CatalogServletHelper;
 import nz.ac.auckland.aem.lmz.helper.CatalogServletHelperImpl;
 import nz.ac.auckland.aem.lmz.services.CatalogService;
 import org.apache.felix.scr.annotations.Reference;
@@ -21,7 +22,7 @@ import java.io.IOException;
  * This servlet is able to replicate a complete widget catalog from the authoring environment to the
  * publication environment.
  */
-@SlingServlet(paths = "/bin/replicateWidgetCatalog", methods = "POST")
+@SlingServlet(paths = {"/bin/replicateWidgetCatalog"}, methods = {"POST"})
 public class CatalogReplicationServlet extends SlingAllMethodsServlet {
 
     /**
@@ -35,7 +36,7 @@ public class CatalogReplicationServlet extends SlingAllMethodsServlet {
      */
     @Reference private CatalogService catalog;
 
-    @Reference private CatalogServletHelperImpl servletHelper;
+    @Reference private CatalogServletHelper servletHelper;
 
     /**
      * Implementation of this servlet. It will go ahead and publish a certain widget catalog from

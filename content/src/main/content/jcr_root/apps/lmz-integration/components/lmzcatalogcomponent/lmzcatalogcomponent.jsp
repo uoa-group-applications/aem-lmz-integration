@@ -38,10 +38,17 @@
 <div id="<%= _currentNode.getName() %>">
     <c:choose>
         <c:when test="${notFirstComponent}">
-            <p class="warning-block">
-                Only one LMZ widget catalog component per page is allowed. Please remove
-                this component.
-            </p>
+            <div class="warning-block">
+                <p>
+                    Only one LMZ widget catalog component per page is allowed. Please remove
+                    this component.
+                </p><br/>
+                <form action="/bin/deleteWidgetCatalog" method="post">
+                    <input type="hidden" name="catalog" value="<%= _currentNode.getPath() %>" />
+                    <input type="hidden" name="redirectTo" value="<%= mappedUrl(_currentPage.getPath() + ".html")%>" />
+                    <button type="submit">Delete Catalog</button>
+                </form>
+            </div>
         </c:when>
         <c:when test="${noSynch}">
             <p class="cq-info">
@@ -100,7 +107,7 @@
                 </c:forEach>
                 <tr class="replicate">
                     <td colspan="2" align="right">
-                        <form action="/bin/replicateWidgetCatalog.do" method="post">
+                        <form action="/bin/replicateWidgetCatalog" method="post">
                             <input type="hidden" name="catalog" value="${uniqueCatalogId}" />
                             <input type="hidden" name="redirectTo" value="<%= mappedUrl(_currentPage.getPath() + ".html?done=true") %>" />
                             <button type="submit">Replicate Catalog</button>
@@ -136,9 +143,9 @@
                             safe to delete the catalog. To do so, use the button below.
                             <br/><br/>
                         </p>
-                        <form id="deleteCatalog" action="/bin/deleteWidgetCatalog.do" method="post">
+                        <form id="deleteCatalog" action="/bin/deleteWidgetCatalog" method="post">
                             <input type="hidden" name="catalog" value="${uniqueCatalogId}" />
-                            <input type="hidden" name="redirectTo" value="<%= mappedUrl(_currentPage.getParent().getPath() + ".html")%>" />
+                            <input type="hidden" name="redirectTo" value="<%= mappedUrl(_currentPage.getPath() + ".html")%>" />
                             <button type="submit">Delete Catalog</button>
                         </form>
                     </div>

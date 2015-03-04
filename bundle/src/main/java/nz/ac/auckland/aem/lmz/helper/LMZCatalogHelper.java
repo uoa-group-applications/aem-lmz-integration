@@ -1,6 +1,8 @@
 package nz.ac.auckland.aem.lmz.helper;
 
 import nz.ac.auckland.aem.lmz.core.ComponentBeanContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jcr.*;
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ public class LMZCatalogHelper {
      */
     public static final String PARAM_WIDGET_ENDPOINTS = "widgetEndpoints";
     public static final String PARAM_UUID = "catalog-uuid";
+
+    private static final Logger LOG = LoggerFactory.getLogger(LMZCatalogHelper.class);
 
     /**
      * Context
@@ -59,7 +63,13 @@ public class LMZCatalogHelper {
      * @throws RepositoryException
      */
     public List<String> getCatalogResourceTypes() throws RepositoryException {
-        Node baseNode = this.context.getCurrentNode().getSession().getNode(getCatalogComponentBasePath());
+        Session jcrSession = this.context.getCurrentNode().getSession();
+        if (!jcrSession.nodeExists(getCatalogComponentBasePath())) {
+            LOG.error("No such node `{}`, returning empty list", getCatalogComponentBasePath());
+            return null;
+        }
+
+        Node baseNode = jcrSession.getNode(getCatalogComponentBasePath());
         NodeIterator iterator = baseNode.getNodes();
 
         List<String> resourceTypes = new ArrayList<String>();

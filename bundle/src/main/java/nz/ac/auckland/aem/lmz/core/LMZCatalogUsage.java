@@ -76,6 +76,10 @@ public class LMZCatalogUsage {
      * @return is a list of all endpoints
      */
     protected List<UsageLocation> getLocations(List<String> resourceTypes) throws RepositoryException {
+        if (resourceTypes == null) {
+            return null;
+        }
+
         List<UsageLocation> locations = new ArrayList<UsageLocation>();
 
         for (String endpoint : resourceTypes) {

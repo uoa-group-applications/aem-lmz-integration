@@ -23,8 +23,8 @@ import java.io.IOException;
  * @author Marnix Cook
  */
 @SlingServlet(
-    paths = {"/bin/deleteWidgetCatalog.do"},
-    methods = {"GET"}
+    paths = {"/bin/deleteWidgetCatalog"},
+    methods = {"POST"}
 )
 public class CatalogDeleteServlet extends SlingAllMethodsServlet {
 
@@ -52,37 +52,27 @@ public class CatalogDeleteServlet extends SlingAllMethodsServlet {
             LOG.info("This servlet can only called on the authoring environment");
         }
 
-        // make sure the necesary request parameters are there
+        // make sure the necessary request parameters are there
         if (!servlet.hasNecessaryRequestParameters(request)) {
             LOG.warn("The request parameters are insufficient, aborting.");
             response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
             return;
         }
 
-        String catalogName = servlet.getCatalogName(request);
-        if (!catalog.exists(catalogName)) {
-            servlet.outputError(response, "No such catalog found: " + catalogName);
+        String catalogIdentifier = servlet.getCatalogName(request);
+        if (!catalog.exists(catalogIdentifier)) {
+            servlet.outputError(response, "No such catalog found: " + catalogIdentifier);
             return;
         }
 
         Session jcrSession = request.getResourceResolver().adaptTo(Session.class);
 
         try {
-            Node catalogComponent = catalog.findCatalogComponentWithUuid(jcrSession, catalogName);
-            LOG.info("Found catalog component on path: `{}`", catalogComponent.getPath());
-
-            // remove catalog component from author
-            catalogComponent.remove();
-
-            // remove generated components from author
-            jcrSession.getNode("/apps/lmzconfig/components/" + catalogName).remove();
-
-            // save changes
-            jcrSession.save();
-
-            // remove from publish
-            catalog.replicateRemove(catalogName);
-            catalog.replicateRemovePath(jcrSession, catalogComponent.getPath());
+            if (isNodePathIdentifier(catalogIdentifier)) {
+                deleteUnconfiguredCatalogComponent(catalogIdentifier, jcrSession);
+            } else {
+                deleteCatalogAndGeneratedComponents(catalogIdentifier, jcrSession);
+            }
         }
         catch (RepositoryException rEx) {
             LOG.error("A repository exception occurred", rEx);
@@ -95,7 +85,56 @@ public class CatalogDeleteServlet extends SlingAllMethodsServlet {
         response.sendRedirect(servlet.getRedirectTo(request));
     }
 
-    protected String getCatalogName(SlingHttpServletRequest request) {
-        return request.getParameter(CatalogConstants.PARAM_CATALOG_NAME);
+    /**
+     * @return true if the catalog identifier is a node path (starts with '/')
+     */
+    protected boolean isNodePathIdentifier(String catalogIdentifier) {
+        return catalogIdentifier.startsWith("/");
     }
+
+    /**
+     * This method completely deletes a catalog and its generated components and then
+     * replicate deletes them on the publication server.
+     *
+     * @param catalogIdentifier is the uuid of the catalog to remove
+     * @param jcrSession is the jcr session to talk to
+     *
+     * @throws RepositoryException
+     * @throws ReplicationException
+     */
+    protected void deleteCatalogAndGeneratedComponents(String catalogIdentifier, Session jcrSession) throws RepositoryException, ReplicationException {
+        Node catalogComponent = catalog.findCatalogComponentWithUuid(jcrSession, catalogIdentifier);
+        LOG.info("Found catalog component on path: `{}`", catalogComponent.getPath());
+
+        // remove from publish
+        catalog.replicateRemove(catalogIdentifier);
+        catalog.replicateRemovePath(jcrSession, catalogComponent.getPath());
+
+        // remove catalog component from author
+        catalogComponent.remove();
+
+        // remove generated components from author
+        jcrSession.getNode("/apps/lmzconfig/components/" + catalogIdentifier).remove();
+
+        // save changes
+        jcrSession.save();
+
+    }
+
+    /**
+     * When a catalog isn't configured yet it's relatively simple to delete it. We'll just
+     * look up the node and remove it. Before calling this method, make sure you checked that
+     * the type was actually what we're expecting.
+     *
+     * @param nodePath is the path to the catalog we're deleting
+     * @param jcrSession is the session to talk to.
+     *
+     * @throws RepositoryException
+     */
+    protected void deleteUnconfiguredCatalogComponent(String nodePath, Session jcrSession) throws RepositoryException {
+        LOG.info("Deleting catalog node at `{}`", nodePath);
+        jcrSession.getNode(nodePath).remove();
+        jcrSession.save();
+    }
+
 }
