@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -174,7 +175,13 @@ public class WidgetRenderContext {
         String configString = configParams.toString();
         LOG.info("config params: " + configString);
         Base64 b64Enc = new Base64();
-        return b64Enc.encodeToString(configString.getBytes());
+        try {
+            return b64Enc.encodeToString(configString.getBytes("UTF-8"));
+        }
+        catch (UnsupportedEncodingException ueEx) {
+            LOG.error("Cannot generate utf-8 base64 encoded configuration, aborting", ueEx);
+            return null;
+        }
     }
 
 
