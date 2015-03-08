@@ -85,6 +85,8 @@ public class LMZWidgetComponentCreator {
             logger.error("Could not finish the configuration request", ioEx);
         } catch (IllegalStateException isEx) {
             logger.error("This URL specified is incorrect, aborting.", isEx);
+        } catch (IllegalArgumentException iaEx) {
+            logger.error("This URL specified is incorrect, aborting.", iaEx);
         }
         finally {
             if (method != null) {
