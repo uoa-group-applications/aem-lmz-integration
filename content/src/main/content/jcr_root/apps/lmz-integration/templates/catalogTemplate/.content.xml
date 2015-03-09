@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          jcr:description="UoA LMZ Catalog Template"
+          jcr:primaryType="cq:Template"
+          jcr:title="LMZ Catalog Template"
+          allowedPaths="[/content/lmzcatalogs(/.*)?]"
+          ranking="{Long}110"
+          shortTitle="LMZ Catalog Page">
+    <jcr:content
+        jcr:primaryType="cq:PageContent"
+        sling:resourceType="central/components/templates/3-column">
+        <par
+            jcr:lastModified="{Date}2013-05-23T11:23:01.143+12:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="foundation/components/parsys"
+        >
+
+            <catalog
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="lmz-integration/components/lmzcatalogcomponent"
+            />
+
+        </par>
+
+    </jcr:content>
+</jcr:root>

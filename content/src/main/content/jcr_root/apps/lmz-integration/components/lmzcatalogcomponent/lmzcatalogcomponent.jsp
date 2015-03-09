@@ -182,7 +182,16 @@
             </c:if>
         </c:when>
         <c:otherwise>
-            <p class="cq-warning">Please configure this component</p>
+            <div class="warning-block">
+                <p>
+                    Please configure this component or delete it when no longer necessary.
+                </p><br/>
+                <form action="/bin/deleteWidgetCatalog" method="post">
+                    <input type="hidden" name="catalog" value="<%= _currentNode.getPath() %>" />
+                    <input type="hidden" name="redirectTo" value="<%= mappedUrl(_currentPage.getPath() + ".html")%>" />
+                    <button type="submit">Delete Catalog</button>
+                </form>
+            </div>
         </c:otherwise>
     </c:choose>
 </div>

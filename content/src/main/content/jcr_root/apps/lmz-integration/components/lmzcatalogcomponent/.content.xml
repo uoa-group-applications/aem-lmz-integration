@@ -3,5 +3,5 @@
     jcr:primaryType="cq:Component"
     jcr:title="LMZ Widget Catalog"
     sling:resourceSuperType="foundation/components/parbase"
-    allowedParents="[*/parsys]"
-    componentGroup="UoA LMZ"/>
+    componentGroup="UoA LMZ"
+/>
