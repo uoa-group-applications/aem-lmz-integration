@@ -42,6 +42,20 @@ public class LMZConfigDialogFactory {
 
         CQDialog retVal = createCQDialog(node, wc.getWidget().getDescription());
 
+        NTUnstructured listeners = new NTUnstructured("listeners");
+        listeners.addProperty(
+            "loadcontent",
+            "String",
+            "function(dialog) {" +
+                "if (!UOA.IS_ADMIN) {" +
+                    "var panels = dialog.findByType('tabpanel');" +
+                    "panels[0].hideTabStripItem(panels[0].items.length - 1);" +
+                "}" +
+            "}"
+        );
+
+        retVal.addChildWidget(listeners);
+
         CQWidgetCollection items = new CQWidgetCollection("items");
         retVal.addChildWidget(items);
 
@@ -51,7 +65,6 @@ public class LMZConfigDialogFactory {
         CQWidgetCollection panelItems = new CQWidgetCollection("items");
         tabs.addChildWidget(panelItems);
 
-        addMetadataTab(panelItems);
 
         for (Map.Entry<String, WidgetTab> widgetTab : wc.getConfiguration().entrySet()) {
             // not valid to add? skip it.
@@ -78,6 +91,7 @@ public class LMZConfigDialogFactory {
             }
         }
 
+        addMetadataTab(panelItems);
 
         return retVal;
     }
@@ -104,8 +118,6 @@ public class LMZConfigDialogFactory {
         CQPanel tabMetadata = new CQPanel("metadata");
         tabMetadata.addProperty("title", "String", "Metadata");
         panelItems.addChildWidget(tabMetadata);
-
-        tabMetadata.makeAdminOnly();
 
         CQWidgetCollection mdWidgetItems = new CQWidgetCollection("items");
         tabMetadata.addChildWidget(mdWidgetItems);

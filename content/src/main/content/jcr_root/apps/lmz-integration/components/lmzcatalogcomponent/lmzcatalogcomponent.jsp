@@ -17,7 +17,7 @@
 <%
 
     LMZWidgetComponentCreator creator = new LMZWidgetComponentCreator(_beanContext);
-    nz.ac.auckland.aem.lmz.helper.LMZCatalogHelper categoryHelper = new nz.ac.auckland.aem.lmz.helper.LMZCatalogHelper(_beanContext);
+    LMZCatalogHelper categoryHelper = new nz.ac.auckland.aem.lmz.helper.LMZCatalogHelper(_beanContext);
 
     boolean firstComponent = creator.isFirstCatalogComponent();
 

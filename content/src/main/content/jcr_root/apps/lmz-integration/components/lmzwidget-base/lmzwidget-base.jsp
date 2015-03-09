@@ -10,6 +10,15 @@
 <c:set var="renderer" value="<%= new LMZWidgetRenderer(_beanContext) %>" />
 <c:set var="ctx" value="${renderer.renderContext}" />
 
+<%-- only on authoring environment --%>
+<c:if test="${!renderer.esiInclude}">
+    <c:set var="isAdmin" value="${renderer.administrator ? 'true' : 'false'}" />
+    <script type="text/javascript">
+        window.UOA = window.UOA || {};
+        UOA.IS_ADMIN = ${isAdmin};
+    </script>
+</c:if>
+
 <c:choose>
     <c:when test="${renderer.disabled}">
         <p class="maintenance-mode">

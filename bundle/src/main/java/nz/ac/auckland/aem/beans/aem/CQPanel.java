@@ -29,27 +29,4 @@ public class CQPanel extends AbstractJCRNode {
         return "cq:Panel";
     }
 
-    /**
-     * Add replication policy nodes to the dialog node so it only shows
-     * when an administrator is viewing it.
-     *
-     * @throws RepositoryException
-     */
-    public void makeAdminOnly() {
-        Node node = this.getThisNode();
-
-        try {
-            // setup policies
-            AclPolicy policies = new AclPolicy();
-            policies.deny("contributor", "jcr:read");
-            policies.allow("administrators", "jcr:read");
-
-            // apply policies
-            CRXPolicyManager crxPM = new CRXPolicyManager(node.getSession());
-            crxPM.applyPolicy(node.getPath(), policies);
-        }
-        catch (RepositoryException rEx) {
-            LOG.error("Something happened while trying to write access policies", rEx);
-        }
-    }
 }

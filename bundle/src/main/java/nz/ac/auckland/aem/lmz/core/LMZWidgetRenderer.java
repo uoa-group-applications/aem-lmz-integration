@@ -4,13 +4,19 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.api.security.user.Authorizable;
+import org.apache.jackrabbit.api.security.user.Group;
+import org.apache.jackrabbit.api.security.user.UserManager;
 import org.apache.sling.commons.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -23,6 +29,7 @@ import java.util.Map;
  */
 public class LMZWidgetRenderer {
 
+    public static final String GROUP_ADMIN = "administrators";
     private static Logger logger = LoggerFactory.getLogger(LMZWidgetRenderer.class);
 
     public static final String METADATA_URL = "md_url";
@@ -42,6 +49,20 @@ public class LMZWidgetRenderer {
         this.context = context;
     }
 
+    public boolean isAdministrator() throws RepositoryException {
+        UserManager usrMgr = this.context.getResourceResolver().adaptTo(UserManager.class);
+        Session session = this.context.getCurrentNode().getSession();
+        Authorizable auth = usrMgr.getAuthorizable(session.getUserID());
+
+        Iterator<Group> authGroups = auth.memberOf();
+        while (authGroups.hasNext()) {
+            Group grp = authGroups.next();
+            if (grp.getID().equals(GROUP_ADMIN)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * @return a string->string map of all the configuration properties that have been added to
