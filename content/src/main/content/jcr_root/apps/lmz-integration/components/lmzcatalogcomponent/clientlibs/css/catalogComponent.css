@@ -57,6 +57,12 @@
 .lmzcatalogcomponent table td {
     padding: 10px;
     font-size: 12px;
+    overflow: hidden;
+}
+
+.lmzcatalogcomponent table pre {
+    display: inline-block;
+    max-width: 365px;
 }
 
 .lmzcatalogcomponent table td.success {
