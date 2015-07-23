@@ -95,6 +95,10 @@
                                 <filter>
                                     <root>/etc/designs/lmz-integration</root>
                                 </filter>
+
+                                <filter>
+                                    <root>/oak:index/lmzCatalogIndex</root>
+                                </filter>
                             </filters>
                             <properties>
                                 <acHandling>Overwrite</acHandling>
