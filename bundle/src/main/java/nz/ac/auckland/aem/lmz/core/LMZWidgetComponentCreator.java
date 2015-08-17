@@ -1,6 +1,7 @@
 package nz.ac.auckland.aem.lmz.core;
 
 import nz.ac.auckland.aem.lmz.helper.LMZCatalogHelper;
+import nz.ac.auckland.aem.lmz.helper.UrlPruner;
 import nz.ac.auckland.aem.lmz.lmzconfigdialog.LMZConfigDialogFactory;
 import nz.ac.auckland.lmzwidget.configuration.model.WidgetConfiguration;
 import nz.ac.auckland.lmzwidget.configuration.parser.WidgetConfigurationParser;
@@ -176,6 +177,11 @@ public class LMZWidgetComponentCreator {
      * @throws RepositoryException
      */
     protected Node ensureCatalogExists(String catalogName) throws RepositoryException {
+
+        if (catalogName == null) {
+            throw new IllegalArgumentException("Catalog name cannot be null, aborting.");
+        }
+
         Node root = this.context.getCurrentNode().getSession().getNode("/apps");
 
         if (!root.hasNode("lmzconfig")) {
@@ -232,6 +238,25 @@ public class LMZWidgetComponentCreator {
         return null;
     }
 
+    /**
+     * @return the map that is input with the keys pruned
+     */
+    public <T> Map<String, T> pruneKeys(Map<String, T> original) {
+        if (original == null) {
+            return null;
+        }
+
+        UrlPruner pruner = getUrlPrunerInstance();
+
+        Map<String, T> prunedResults = new LinkedHashMap<String, T>();
+        for (Map.Entry<String, T> entry : original.entrySet()) {
+            prunedResults.put(
+                pruner.getPrunedUrl(entry.getKey()),
+                entry.getValue()
+            );
+        }
+        return prunedResults;
+    }
 
     /**
      * Update all the widgets and return some information around it success
@@ -348,4 +373,9 @@ public class LMZWidgetComponentCreator {
                     ? current.getProperty(PARAM_RESOURCETYPE).getString()
                     : null;
     }
+
+    protected UrlPruner getUrlPrunerInstance() {
+        return new UrlPruner();
+    }
+
 }

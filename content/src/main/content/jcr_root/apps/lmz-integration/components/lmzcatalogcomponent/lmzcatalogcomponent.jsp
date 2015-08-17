@@ -8,10 +8,11 @@
 <%@ include file="/apps/central/global/resolver.jsp" %>
 <%@ page import="nz.ac.auckland.aem.lmz.core.LMZWidgetComponentCreator" %>
 <%@ page import="nz.ac.auckland.lmzwidget.configuration.model.WidgetConfiguration" %>
-<%@ page import="org.apache.commons.lang3.ArrayUtils" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="nz.ac.auckland.aem.lmz.core.LMZCatalogUsage" %>
 <%@ page import="nz.ac.auckland.aem.lmz.helper.LMZCatalogHelper" %>
+<%@ page import="nz.ac.auckland.aem.lmz.helper.UrlPruner" %>
+<%@ page import="java.util.LinkedHashMap" %>
 
 <c:set var="usage" value="<%= new LMZCatalogUsage(_beanContext) %>" />
 <%
@@ -23,8 +24,12 @@
 
     if (firstComponent) {
         if (creator.shouldSynchronize()) {
-            request.setAttribute("updateResults", creator.updateAllWidgets());
-        } else {
+            Map<String, WidgetConfiguration> updateResults =
+                    creator.pruneKeys(creator.updateAllWidgets());
+
+            request.setAttribute("updateResults", updateResults);
+        }
+        else {
             request.setAttribute("noSynch", true);
         }
     }

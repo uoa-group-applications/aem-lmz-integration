@@ -14,7 +14,7 @@
 
                         var uuid = dialog.getField('./catalog-uuid');
                         var val = uuid.getValue();
-                        if (val === '') {
+                        if (!val) {
                             uuid.setValue(val = md5(dialog.path + '_' + Math.floor(Math.random() * 1000000)));
                         }
                         dialog.getField('./display-uuid').setValue(val);
