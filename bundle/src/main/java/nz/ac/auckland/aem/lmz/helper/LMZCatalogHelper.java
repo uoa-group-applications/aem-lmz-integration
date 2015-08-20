@@ -59,17 +59,17 @@ public class LMZCatalogHelper {
     /**
      * This method retrieves a list of resource types
      *
+     * @param jcrSession is the jcr session
      * @return a list of resource types
      * @throws RepositoryException
      */
-    public List<String> getCatalogResourceTypes() throws RepositoryException {
-        Session jcrSession = this.context.getCurrentNode().getSession();
-        if (!jcrSession.nodeExists(getCatalogComponentBasePath())) {
-            LOG.error("No such node `{}`, returning empty list", getCatalogComponentBasePath());
+    public List<String> getCatalogResourceTypes(Session jcrSession, String catalogBasePath) throws RepositoryException {
+        if (!jcrSession.nodeExists(catalogBasePath)) {
+            LOG.error("No such node `{}`, returning empty list", catalogBasePath);
             return null;
         }
 
-        Node baseNode = jcrSession.getNode(getCatalogComponentBasePath());
+        Node baseNode = jcrSession.getNode(catalogBasePath);
         NodeIterator iterator = baseNode.getNodes();
 
         List<String> resourceTypes = new ArrayList<String>();
@@ -78,18 +78,33 @@ public class LMZCatalogHelper {
 
             // add to list without /apps/ prefix
             resourceTypes.add(
-                    componentNode.getPath().substring("/apps/".length())
+                componentNode.getPath().substring("/apps/".length())
             );
         }
         return resourceTypes;
+
+    }
+
+    /**
+     * This method retrieves a list of resource types
+     *
+     * @return a list of resource types
+     * @throws RepositoryException
+     */
+    public List<String> getCatalogResourceTypes() throws RepositoryException {
+
+        return this.getCatalogResourceTypes(
+                this.context.getCurrentNode().getSession(),
+                this.getCatalogComponentBasePath(getUniqueCatalogIdentifier())
+        );
     }
 
 
     /**
      * @return the path at which this catalog can be found
      */
-    protected String getCatalogComponentBasePath() {
-        return "/apps/lmzconfig/components/" + getUniqueCatalogIdentifier();
+    public String getCatalogComponentBasePath(String uuid) {
+        return "/apps/lmzconfig/components/" + uuid;
     }
 
     /**

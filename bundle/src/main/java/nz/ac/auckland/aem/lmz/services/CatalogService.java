@@ -30,6 +30,13 @@ public interface CatalogService {
     void replicate(String catalogName);
 
     /**
+     * This method initiates replication of the catalog to the publication servers
+     *
+     * @param catalogName is the catalog to replicate
+     */
+    void replicatePages(String catalogName);
+
+    /**
      * Remove the catalog on the publication environment through replicate remove call
      *
      * @param catalogName is the catalog to remove

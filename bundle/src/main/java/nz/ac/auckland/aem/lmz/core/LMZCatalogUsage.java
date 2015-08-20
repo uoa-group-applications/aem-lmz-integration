@@ -4,12 +4,14 @@ import com.day.cq.wcm.api.Page;
 import nz.ac.auckland.aem.lmz.dto.UsageLocation;
 import nz.ac.auckland.aem.lmz.helper.LMZCatalogHelper;
 import org.apache.commons.lang.StringUtils;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
@@ -42,13 +44,36 @@ public class LMZCatalogUsage {
     private List<UsageLocation> locations;
 
     /**
+     * Query manager instance
+     */
+    private QueryManager queryManager;
+
+    /**
+     * Resource resolver
+     */
+    private ResourceResolver resourceResolver;
+
+    /**
+     * Session
+     */
+    private Session jcrSession;
+
+    /**
      * Initialize data-members
      *
      * @param context the content to use for data queries
      */
-    public LMZCatalogUsage(ComponentBeanContext context) {
+    public LMZCatalogUsage(ComponentBeanContext context) throws RepositoryException {
         this.context = context;
         this.catHelper = getHelperInstance(context);
+
+        setQueryManagerInstance(this.context.getQueryManager());
+        setResourceResolverInstance(this.context.getResourceResolver());
+        setJcrSessionInstance(this.context.getCurrentNode().getSession());
+    }
+
+    public LMZCatalogUsage() {
+        this.catHelper = getHelperInstance(null);
     }
 
     /**
@@ -58,15 +83,13 @@ public class LMZCatalogUsage {
         return this.getLocations() != null && this.getLocations().size() > 0;
     }
 
+
     /**
      * @return all the uses of the component in the current environment
+     * @throws RepositoryException
      */
     public List<UsageLocation> getLocations() throws RepositoryException {
-        if (this.locations != null) {
-            return this.locations;
-        }
-
-        return this.locations = getLocations(this.catHelper.getCatalogResourceTypes());
+        return this.getLocations(this.catHelper.getCatalogResourceTypes());
     }
 
     /**
@@ -75,7 +98,7 @@ public class LMZCatalogUsage {
      * @param resourceTypes a list of resource types to go looking for.
      * @return is a list of all endpoints
      */
-    protected List<UsageLocation> getLocations(List<String> resourceTypes) throws RepositoryException {
+    public List<UsageLocation> getLocations(List<String> resourceTypes) throws RepositoryException {
         if (resourceTypes == null) {
             return null;
         }
@@ -120,7 +143,7 @@ public class LMZCatalogUsage {
             }
 
             String nodePagePath = getPagePath(resultNode.getPath());
-            Page page = this.context.getResourceResolver().getResource(nodePagePath).adaptTo(Page.class);
+            Page page = getResourceResolverInstance().getResource(nodePagePath).adaptTo(Page.class);
 
             usages.add(
                 new UsageLocation(
@@ -171,18 +194,45 @@ public class LMZCatalogUsage {
                 "SELECT child.* FROM [nt:unstructured] as child " +
                 "WHERE child.[sling:resourceType] = '" + resourceType + "'";
 
-        QueryManager qMgr = this.context.getQueryManager();
+        QueryManager qMgr = getQueryManagerInstance();
         Query query = qMgr.createQuery(queryText, Query.JCR_SQL2);
         QueryResult qResult = query.execute();
 
         return qResult.getNodes();
     }
 
-    /**
-     * @return a fresh instance of the lmz catalog helper (extracted for testing purposes)
+
+    /*
+        Getters and setters to make this class usable by non-component aware friends
      */
-    protected LMZCatalogHelper getHelperInstance(ComponentBeanContext context) {
+
+
+    public LMZCatalogHelper getHelperInstance(ComponentBeanContext context) {
         return new LMZCatalogHelper(context);
+    }
+
+    protected QueryManager getQueryManagerInstance() throws RepositoryException {
+            return queryManager;
+    }
+
+    public void setQueryManagerInstance(QueryManager qMgr) {
+        this.queryManager = qMgr;
+    }
+
+    protected ResourceResolver getResourceResolverInstance() {
+        return this.resourceResolver;
+    }
+
+    public void setResourceResolverInstance(ResourceResolver resourceResolver) {
+        this.resourceResolver = resourceResolver;
+    }
+
+    public Session getJcrSessionInstance() {
+        return this.jcrSession;
+    }
+
+    public void setJcrSessionInstance(Session jcrSession) {
+        this.jcrSession = jcrSession;
     }
 
 }

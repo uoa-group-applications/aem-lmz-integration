@@ -139,6 +139,20 @@
                     </table>
                     <div class="info-block">
                         Because the catalog is actively being used, you are not allowed to delete it.
+                        <br/>
+                        <br/>
+
+                        <p>
+                            To invalidate the cache of the widget pages, activate all the pages
+                            on which the widget is used.
+                            <br/><br/>
+                        </p>
+                        <form id="refreshPages" action="/bin/activateWidgetPagesForCatalog" method="post">
+                            <input type="hidden" name="catalog" value="${uniqueCatalogId}" />
+                            <input type="hidden" name="redirectTo" value="<%= mappedUrl(_currentPage.getPath() + ".html")%>" />
+                            <button type="submit">Activate pages</button>
+                        </form>
+
                     </div>
                 </c:when>
                 <c:otherwise>

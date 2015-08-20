@@ -60,7 +60,6 @@ public class Test {
         }
         System.out.println("new URL"+ requestUrl);
 
-        System.out.println("URL PATTERN MATCH: " + Pattern.matches(WidgetItem.PATTERNS.get("url"), "http://net.tutsplus.com/about"));
         System.out.println("EMAIL PATTERN MATCH: " + Pattern.matches(WidgetItem.PATTERNS.get("email"), "greg.kw@mmm.com"));
 
     }

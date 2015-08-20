@@ -1,5 +1,7 @@
 package nz.ac.auckland.aem.lmz.dto;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @author Marnix Cook
  *
@@ -46,5 +48,17 @@ public class UsageLocation {
 
     public void setPageTitle(String pageTitle) {
         this.pageTitle = pageTitle;
+    }
+
+    public String getPath() {
+        if (StringUtils.isBlank(url)) {
+            return url;
+        }
+
+        if (url.endsWith(".html")) {
+            return url.substring(0, url.length() - ".html".length());
+        }
+
+        return url;
     }
 }

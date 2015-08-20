@@ -3,6 +3,9 @@ package nz.ac.auckland.aem.lmz.services;
 import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationException;
 import com.day.cq.replication.Replicator;
+import nz.ac.auckland.aem.lmz.core.LMZCatalogUsage;
+import nz.ac.auckland.aem.lmz.dto.UsageLocation;
+import nz.ac.auckland.aem.lmz.helper.LMZCatalogHelper;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
@@ -115,6 +118,44 @@ public class CatalogServiceImpl implements CatalogService {
             LOG.error("An exception during repository access happened", repEx);
         }
     }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public void replicatePages(String catalogUuid) {
+
+        LOG.info("Trying to replicate the elements in catalog with UUID: `{}`", catalogUuid);
+
+        try {
+            LMZCatalogUsage usage = setupLMZCatalogUsageInstance();
+            LMZCatalogHelper helper = new LMZCatalogHelper(null);
+
+            List<String> resourcesForCatalog =
+                    helper.getCatalogResourceTypes(
+                            usage.getJcrSessionInstance(),
+                            helper.getCatalogComponentBasePath(catalogUuid)
+                    );
+
+
+            List<UsageLocation> locations = usage.getLocations(resourcesForCatalog);
+
+            for (UsageLocation location : locations) {
+                LOG.info("Found usage of component in page `{}`, replicating it.", location.getUrl());
+                replicator.replicate(
+                        usage.getJcrSessionInstance(),
+                        ReplicationActionType.ACTIVATE,
+                        location.getPath()
+                );
+            }
+
+            LOG.info("Finished replicating the pages that belong to the catalog");
+        }
+        catch (Exception ex) {
+            LOG.error("Couldn't replicate the pages for catalog `{}`, caused by:", catalogUuid, ex);
+        }
+    }
+
 
     /**
      * Remove the catalog on the publication environment through replicate remove call
@@ -248,4 +289,27 @@ public class CatalogServiceImpl implements CatalogService {
         }
         return this.resourceResolver;
     }
+
+
+    /**
+     * @return an instance of LMZ catalog usage with instance set from local information rather
+     * than using a component context
+     *
+     * @throws RepositoryException
+     */
+    protected LMZCatalogUsage setupLMZCatalogUsageInstance() throws RepositoryException {
+        LMZCatalogUsage usage = new LMZCatalogUsage();
+
+        // get instances
+        ResourceResolver resolver = getResourceResolver();
+        Session jcrSession = resolver.adaptTo(Session.class);
+        QueryManager queryManager = jcrSession.getWorkspace().getQueryManager();
+
+        // set instances in object
+        usage.setResourceResolverInstance(resolver);
+        usage.setJcrSessionInstance(jcrSession);
+        usage.setQueryManagerInstance(queryManager);
+        return usage;
+    }
+
 }
