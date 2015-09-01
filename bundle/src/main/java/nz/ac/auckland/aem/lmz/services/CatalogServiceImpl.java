@@ -2,6 +2,7 @@ package nz.ac.auckland.aem.lmz.services;
 
 import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationException;
+import com.day.cq.replication.ReplicationOptions;
 import com.day.cq.replication.Replicator;
 import nz.ac.auckland.aem.lmz.core.LMZCatalogUsage;
 import nz.ac.auckland.aem.lmz.dto.UsageLocation;
@@ -107,7 +108,8 @@ public class CatalogServiceImpl implements CatalogService {
                 replicator.replicate(
                         catalog.adaptTo(Node.class).getSession(),
                         ReplicationActionType.ACTIVATE,
-                        node.getPath()
+                        node.getPath(),
+                        getReplicationOptions()
                 );
             }
         }
@@ -117,6 +119,17 @@ public class CatalogServiceImpl implements CatalogService {
         catch (RepositoryException repEx) {
             LOG.error("An exception during repository access happened", repEx);
         }
+    }
+
+    /**
+     * @return the replication options that make it not update the cq:lastUpdated properties
+     * which is causing the dialog to stop loading
+     */
+    protected ReplicationOptions getReplicationOptions() {
+        ReplicationOptions repOpts = new ReplicationOptions();
+        repOpts.setSuppressStatusUpdate(true);
+        repOpts.setSuppressVersions(true);
+        return repOpts;
     }
 
 
